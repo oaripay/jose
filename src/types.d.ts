@@ -156,6 +156,23 @@ export interface JWK extends JWKParameters {
 }
 
 /**
+ * Hardware-backed JSON Web Key parameters.
+ *
+ * This interface only includes public key material and metadata that can be represented for a
+ * hardware-backed key. Private key material remains in HSM and cannot be set.
+ */
+export interface HardwareJWK
+  extends Pick<JWK, 'alg' | 'crv' | 'e' | 'kid' | 'kty' | 'n' | 'pub' | 'use' | 'x' | 'y'> {
+  /**
+   * Produces a signature for the provided JWS Signing Input using the hardware-backed private key.
+   *
+   * @param alg JWS "alg" (Algorithm) Header Parameter value to use for signing.
+   * @param data Binary JWS Signing Input to sign.
+   */
+  sign: (alg: string, data: Uint8Array) => Promise<Uint8Array>
+}
+
+/**
  * @private
  *
  * @internal

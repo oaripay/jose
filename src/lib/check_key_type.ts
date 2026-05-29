@@ -92,7 +92,10 @@ const asymmetricTypeCheck = (alg: string, key: unknown, usage: Usage) => {
   if (jwk.isJWK(key)) {
     switch (usage) {
       case 'decrypt':
+        if (jwk.isPrivateJWK(key) && jwkMatchesOp(alg, key, usage)) return
+        throw new TypeError(`JSON Web Key for this operation must be a private JWK`)
       case 'sign':
+        if (jwk.isHardwareJWK(key) && jwkMatchesOp(alg, key, usage)) return
         if (jwk.isPrivateJWK(key) && jwkMatchesOp(alg, key, usage)) return
         throw new TypeError(`JSON Web Key for this operation must be a private JWK`)
       case 'encrypt':

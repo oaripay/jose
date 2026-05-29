@@ -45,6 +45,9 @@ export function isDisjoint(...headers: Array<object | undefined>) {
 export const isJWK = (key: unknown): key is types.JWK & { kty: string } =>
   isObject<types.JWK>(key) && typeof key.kty === 'string'
 
+export const isHardwareJWK = (key: unknown): key is types.HardwareJWK & { kty: string } =>
+  isJWK(key) && typeof (key as types.HardwareJWK).sign === 'function'
+
 export const isPrivateJWK = (key: types.JWK & { kty: string }) =>
   key.kty !== 'oct' &&
   ((key.kty === 'AKP' && typeof key.priv === 'string') || typeof key.d === 'string')

@@ -13,7 +13,6 @@ import { JWSInvalid } from '../../util/errors.js'
 import { concat, encode } from '../../lib/buffer_utils.js'
 import { checkKeyType } from '../../lib/check_key_type.js'
 import { validateCrit } from '../../lib/validate_crit.js'
-import { normalizeKey } from '../../lib/normalize_key.js'
 import { assertNotSet } from '../../lib/helpers.js'
 
 /**
@@ -150,9 +149,7 @@ export class FlattenedSign {
     }
 
     const data = concat(protectedHeaderBytes, encode('.'), payloadB)
-
-    const k = await normalizeKey(key, alg)
-    const signature = await sign(alg, k, data)
+    const signature = await sign(alg, key, data)
 
     const jws: types.FlattenedJWS = {
       signature: b64u(signature),

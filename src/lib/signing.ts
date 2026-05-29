@@ -2,6 +2,8 @@ import type * as types from '../types.d.ts'
 import { JOSENotSupported } from '../util/errors.js'
 import { checkSigCryptoKey } from './crypto_key.js'
 import { invalidKeyInput } from './invalid_key_input.js'
+import { normalizeKey } from './normalize_key.js'
+import { isHardwareJWK } from './type_checks.js'
 
 export function checkKeyLength(alg: string, key: types.CryptoKey) {
   if (alg.startsWith('RS') || alg.startsWith('PS')) {
@@ -63,14 +65,26 @@ async function getSigKey(alg: string, key: types.CryptoKey | Uint8Array, usage: 
   return key
 }
 
-export async function sign(alg: string, key: types.CryptoKey | Uint8Array, data: Uint8Array) {
-  const cryptoKey = await getSigKey(alg, key, 'sign')
+export async function sign(
+  alg: string,
+  key: types.CryptoKey | types.KeyObject | types.JWK | types.HardwareJWK | Uint8Array,
+  data: Uint8Array,
+) {
+  if (isHardwareJWK(key)) {
+    return key.sign(alg, data)
+  }
+
+  const k = await normalizeKey(key, alg)
+  const cryptoKey = await getSigKey(alg, k, 'sign')
+
   checkKeyLength(alg, cryptoKey)
+
   const signature = await crypto.subtle.sign(
     subtleAlgorithm(alg, cryptoKey.algorithm),
     cryptoKey,
     data as Uint8Array<ArrayBuffer>,
   )
+
   return new Uint8Array(signature)
 }
 
