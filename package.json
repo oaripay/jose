@@ -1,6 +1,6 @@
 {
   "name": "@oari/jose",
-  "version": "6.2.3",
+  "version": "0.1.2",
   "license": "MIT",
   "type": "module",
   "imports": {
