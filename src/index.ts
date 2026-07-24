@@ -30,6 +30,8 @@ export type { Signature } from './jws/general/sign.js'
 export { SignJWT } from './jwt/sign.js'
 export { EncryptJWT } from './jwt/encrypt.js'
 
+export { sign as rawSign, verify as rawVerify } from './lib/signing.js'
+
 export { calculateJwkThumbprint, calculateJwkThumbprintUri } from './jwk/thumbprint.js'
 export { EmbeddedJWK } from './jwk/embedded.js'
 
