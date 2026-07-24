@@ -90,11 +90,12 @@ export async function sign(
 
 export async function verify(
   alg: string,
-  key: types.CryptoKey | Uint8Array,
+  key: types.CryptoKey | types.KeyObject | types.JWK | Uint8Array,
   signature: Uint8Array,
   data: Uint8Array,
 ) {
-  const cryptoKey = await getSigKey(alg, key, 'verify')
+  const k = await normalizeKey(key, alg)
+  const cryptoKey = await getSigKey(alg, k, 'verify')
   checkKeyLength(alg, cryptoKey)
   const algorithm = subtleAlgorithm(alg, cryptoKey.algorithm)
   try {

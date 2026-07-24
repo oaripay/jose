@@ -15,8 +15,8 @@ import { isDisjoint } from '../../lib/type_checks.js'
 import { isObject } from '../../lib/type_checks.js'
 import { checkKeyType } from '../../lib/check_key_type.js'
 import { validateCrit } from '../../lib/validate_crit.js'
-import { validateAlgorithms } from '../../lib/validate_algorithms.js'
 import { normalizeKey } from '../../lib/normalize_key.js'
+import { validateAlgorithms } from '../../lib/validate_algorithms.js'
 
 /**
  * Interface for Flattened JWS Verification dynamic key resolution. No token components have been
@@ -180,8 +180,7 @@ export async function flattenedVerify(
   )
   const signature = decodeBase64url(jws.signature, 'signature', JWSInvalid)
 
-  const k = await normalizeKey(key, alg)
-  const verified = await verify(alg, k, signature, data)
+  const verified = await verify(alg, key, signature, data)
 
   if (!verified) {
     throw new JWSSignatureVerificationFailed()
@@ -207,7 +206,7 @@ export async function flattenedVerify(
   }
 
   if (resolvedKey) {
-    return { ...result, key: k }
+    return { ...result, key: await normalizeKey(key, alg) }
   }
 
   return result
